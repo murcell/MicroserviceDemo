@@ -1,4 +1,5 @@
 Services
-	-Catalog API : http://localhost:5011
-	-PhotoStock API : 5012
+	-Catalog : http://localhost:5011
+	-PhotoStock : 5012
+	-Basket : 5013
 -identity Server : 5001
