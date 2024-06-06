@@ -7,7 +7,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 {
     // bu microservise tokendaðýtmaktan görevli arkadaþ
     options.Authority = builder.Configuration["IdentityServerUrl"];
-    options.Audience = "photo_stock_catalog";
+    options.Audience = "resource_photo_stock";
     options.RequireHttpsMetadata = false;
 });
 
