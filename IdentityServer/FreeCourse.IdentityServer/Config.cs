@@ -22,13 +22,13 @@ namespace FreeCourse.IdentityServer
             };
 
         public static IEnumerable<IdentityResource> IdentityResources =>
-                   new IdentityResource[]
-                   {
-                        new IdentityResources.Email(),
-                        new IdentityResources.OpenId(),
-                        new IdentityResources.Profile(),
-                        new IdentityResource(){ Name="roller", DisplayName="Roles", Description="Kullanıcı rolleri", UserClaims=new []{"role" } }
-                   };
+            new IdentityResource[]
+            {
+                new IdentityResources.Email(),
+                new IdentityResources.OpenId(),
+                new IdentityResources.Profile(),
+                new IdentityResource(){ Name="roller", DisplayName="Roles", Description="Kullanıcı rolleri", UserClaims=new []{"role" } }
+            };
 
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
