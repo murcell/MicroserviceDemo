@@ -22,7 +22,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     options.RequireHttpsMetadata = false;
 });
 
-builder.Services.AddHttpContextAccessor();
+
 // Add services to the container.
 builder.Services.AddControllers(opt =>
 {
@@ -33,12 +33,7 @@ builder.Services.AddControllers(opt =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ISharedIdentityService,SharedIdentityService>();
-builder.Services.AddMediatR(cfg =>
-{
-    cfg.RegisterServicesFromAssembly(typeof(FreeCourse.Services.Order.Application.Handlers.CreateOrderCommandHandler).Assembly);
-    //cfg.RegisterServicesFromAssembly(typeof(FreeCourse.Services.Order.Application.Handlers.GetOrderByUserIdQueryHandler).Assembly);
-});
+
 
 builder.Services.AddDbContext<OrderDbContext>(opt =>
 {
@@ -48,6 +43,17 @@ builder.Services.AddDbContext<OrderDbContext>(opt =>
     });
 });
 
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ISharedIdentityService,SharedIdentityService>();
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(FreeCourse.Services.Order.Application.Handlers.CreateOrderCommandHandler).Assembly);
+    //cfg.RegisterServicesFromAssembly(typeof(FreeCourse.Services.Order.Application.Handlers.GetOrderByUserIdQueryHandler).Assembly);
+});
+
+
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -56,7 +62,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
