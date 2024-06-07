@@ -6,3 +6,4 @@ Services
 	-Order : 5015
 	-FakePayment : 5016
 -identity Server : 5001
+-Gateway : 5000
