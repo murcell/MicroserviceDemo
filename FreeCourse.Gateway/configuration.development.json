@@ -11,11 +11,11 @@
       ],
       "UpstreamPathTemplate": "/services/catalog/{everything}",
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
-      "UpstreamScheme": "http"
-      //"AuthenticationOptions": {
-      //  "AuthenticationProviderKey": "GatewayAuthenticationScheme",
-      //  "AllowedScopes": [ "catalog_fullpermission" ]
-      //}
+      "UpstreamScheme": "http",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "GatewayAuthenticationScheme",
+        "AllowedScopes": [ "catalog_fullpermission" ]
+      }
      }
       //,
     //{
