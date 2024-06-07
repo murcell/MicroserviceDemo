@@ -12,16 +12,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 var requireAuthorizePolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
 
-JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-{
-    // bu microservise token daðýtmaktan görevli arkadaþ
-    options.Authority = builder.Configuration["IdentityServerUrl"];
-    options.Audience = "resource_order";
-    options.RequireHttpsMetadata = false;
-});
-
 
 // Add services to the container.
 builder.Services.AddControllers(opt =>
@@ -33,7 +23,15 @@ builder.Services.AddControllers(opt =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    // bu microservise token daðýtmaktan görevli arkadaþ
+    options.Authority = builder.Configuration["IdentityServerUrl"];
+    options.Audience = "resource_order";
+    options.RequireHttpsMetadata = false;
+});
 
 builder.Services.AddDbContext<OrderDbContext>(opt =>
 {
