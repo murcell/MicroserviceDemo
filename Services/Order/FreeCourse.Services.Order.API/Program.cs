@@ -1,14 +1,44 @@
 using FreeCourse.Services.Order.Infrastructure;
+using FreeCourse.Shared.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
+using System.IdentityModel.Tokens.Jwt;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+var requireAuthorizePolicy = new AuthorizationPolicyBuilder().RequireAuthenticatedUser().Build();
+
+JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
+{
+    // bu microservise token daðýtmaktan görevli arkadaþ
+    options.Authority = builder.Configuration["IdentityServerUrl"];
+    options.Audience = "resource_order";
+    options.RequireHttpsMetadata = false;
+});
+
+builder.Services.AddHttpContextAccessor();
+// Add services to the container.
+builder.Services.AddControllers(opt =>
+{
+    // tüm kontrolleri authorize ettik
+    opt.Filters.Add(new AuthorizeFilter(requireAuthorizePolicy));
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddScoped<ISharedIdentityService,SharedIdentityService>();
+builder.Services.AddMediatR(cfg =>
+{
+    cfg.RegisterServicesFromAssembly(typeof(FreeCourse.Services.Order.Application.Handlers.CreateOrderCommandHandler).Assembly);
+    //cfg.RegisterServicesFromAssembly(typeof(FreeCourse.Services.Order.Application.Handlers.GetOrderByUserIdQueryHandler).Assembly);
+});
 
 builder.Services.AddDbContext<OrderDbContext>(opt =>
 {

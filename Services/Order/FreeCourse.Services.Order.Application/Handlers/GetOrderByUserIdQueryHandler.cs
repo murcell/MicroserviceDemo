@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FreeCourse.Services.Order.Application.Handlers
 {
-    public class GetOrderByUserIdQueryHandler : IRequestHandler<GetOrderByUserIdQuery, Response<List<OrderDto>>>
+    public class GetOrderByUserIdQueryHandler : IRequestHandler<GetOrdersByUserIdQuery, Response<List<OrderDto>>>
     {
         private readonly OrderDbContext _context;
 
@@ -17,7 +17,7 @@ namespace FreeCourse.Services.Order.Application.Handlers
             _context = context;
         }
 
-        public async Task<Response<List<OrderDto>>> Handle(GetOrderByUserIdQuery request, CancellationToken cancellationToken)
+        public async Task<Response<List<OrderDto>>> Handle(GetOrdersByUserIdQuery request, CancellationToken cancellationToken)
         {
             var orders =await _context.Orders.Include(x=>x.OrderItems).Where(x=>x.BuyerId==request.UserId).ToListAsync();
             if (!orders.Any()) 
