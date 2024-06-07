@@ -21,6 +21,7 @@ namespace FreeCourse.IdentityServer
                 new ApiResource("resource_basket"){Scopes={"basket_fullpermission"}},
                 new ApiResource("resource_discount"){Scopes={"discount_fullpermission"}},
                 new ApiResource("resource_order"){Scopes={"order_fullpermission"}},
+                new ApiResource("resource_payment"){Scopes={"payment_fullpermission"}},
                 // örnek olsun diye bırakıldı
                 // new ApiResource("resource_discount"){Scopes={"discount_fullpermission", "discount_read", "discount_write"}},
                 new ApiResource(IdentityServerConstants.LocalApi.ScopeName)
@@ -43,6 +44,7 @@ namespace FreeCourse.IdentityServer
                 new ApiScope("basket_fullpermission","Full access for Basket API"),
                 new ApiScope("discount_fullpermission","Full access for Discount API"),
                 new ApiScope("order_fullpermission","Full access for Order API"),
+                new ApiScope("payment_fullpermission","Full access for Payment API"),
                 //new ApiScope("discount_read","Only read to access for Discount API"), örnek olsun diye
                 //new ApiScope("discount_write","Only write to access for Discount API"), örnek olsun diye
                 new ApiScope(IdentityServerConstants.LocalApi.ScopeName),
@@ -66,7 +68,7 @@ namespace FreeCourse.IdentityServer
                    AllowOfflineAccess = true,
                    ClientSecrets={new Secret("secret".Sha256())},
                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
-                   AllowedScopes={"basket_fullpermission", "discount_fullpermission", "order_fullpermission", IdentityServerConstants.StandardScopes.Email, IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, IdentityServerConstants.StandardScopes.OfflineAccess,"roles",IdentityServerConstants.LocalApi.ScopeName },
+                   AllowedScopes={"basket_fullpermission", "discount_fullpermission", "order_fullpermission", "payment_fullpermission", IdentityServerConstants.StandardScopes.Email, IdentityServerConstants.StandardScopes.OpenId, IdentityServerConstants.StandardScopes.Profile, IdentityServerConstants.StandardScopes.OfflineAccess,"roles",IdentityServerConstants.LocalApi.ScopeName },
                    AccessTokenLifetime=1*60*60,
                    RefreshTokenExpiration=TokenExpiration.Absolute,
                    AbsoluteRefreshTokenLifetime=(int)(DateTime.Now.AddDays(60)-DateTime.Now).TotalSeconds,
