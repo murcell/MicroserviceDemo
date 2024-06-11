@@ -9,7 +9,7 @@
     public class Client
     {
         public string ClientId { get; set; }
-        public string WebMvcClient { get; set; }
+        public string ClientSecret { get; set; }
     }
 
 }
