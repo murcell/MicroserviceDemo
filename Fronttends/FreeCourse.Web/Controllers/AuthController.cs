@@ -1,5 +1,6 @@
 ﻿using FreeCourse.Web.Models;
 using FreeCourse.Web.Services;
+using FreeCourse.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -8,9 +9,9 @@ namespace FreeCourse.Web.Controllers
     public class AuthController : Controller
     {
 
-        private readonly IdentityService _identiyService;
+        private readonly IIdentityService _identiyService;
 
-        public AuthController(IdentityService identiyService)
+        public AuthController(IIdentityService identiyService)
         {
             _identiyService = identiyService;
         }

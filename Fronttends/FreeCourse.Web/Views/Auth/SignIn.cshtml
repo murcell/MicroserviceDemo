@@ -12,7 +12,7 @@
                 <form asp-asp-controller="Auth" asp-action="SignIn">
                     <div class="mb-3">
                         <label asp-for="Email" for="exampleInputEmail1" class="form-label">Email address</label>
-                        <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        <input asp-for="Email" type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
                         @*  <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> *@
                         <span class="text-danger" asp-validation-for="Email"></span>
                     </div>
