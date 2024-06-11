@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using NuGet.Common;
 using System.Globalization;
 using System.Security.Claims;
 using System.Text.Json;
@@ -30,7 +31,47 @@ namespace FreeCourse.Web.Services
 
         public async Task<TokenResponse> GetAccessTokenByRefreshToken()
         {
-            throw new NotImplementedException();
+            var discoveryEndPoints = await _httpClient.GetDiscoveryDocumentAsync(new DiscoveryDocumentRequest()
+            {
+                Address = _serviceApiSettings.BaseUri,
+                Policy = new DiscoveryPolicy() { RequireHttps = false }
+            });
+
+            if (discoveryEndPoints.IsError)
+            {
+                throw discoveryEndPoints.Exception;
+            }
+
+            var refreshToken = await _httpContextAccessor.HttpContext.GetTokenAsync(OpenIdConnectParameterNames.RefreshToken);
+
+            RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest()
+            {
+                ClientId = _clientSettings.WebClientForUsers.ClientId,
+                ClientSecret = _clientSettings.WebClientForUsers.ClientSecret,
+                RefreshToken = refreshToken,
+                Address = discoveryEndPoints.TokenEndpoint
+            };
+
+            var token = await _httpClient.RequestRefreshTokenAsync(refreshTokenRequest);
+            if (token.IsError)
+            {
+                return null;
+            }
+
+            var authenticationTokens = new List<AuthenticationToken>()
+            {
+                new AuthenticationToken(){ Name = OpenIdConnectParameterNames.AccessToken, Value = token.AccessToken},
+                new AuthenticationToken(){ Name = OpenIdConnectParameterNames.RefreshToken, Value = token.RefreshToken},
+                new AuthenticationToken(){ Name = OpenIdConnectParameterNames.ExpiresIn, Value= DateTime.Now.AddSeconds(token.ExpiresIn).ToString("o",CultureInfo.InvariantCulture)}
+            };
+
+            var authenticationResult = await _httpContextAccessor.HttpContext.AuthenticateAsync();
+            var properties = authenticationResult.Properties;
+            properties.StoreTokens(authenticationTokens);
+
+            await _httpContextAccessor.HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, authenticationResult.Principal, properties);
+
+            return token;
         }
 
         public async Task RevokeRefreshToken()
