@@ -1,19 +1,36 @@
+using FreeCourse.Web.Handlers;
 using FreeCourse.Web.Models;
 using FreeCourse.Web.Services;
 using FreeCourse.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-
-
+var serviceApiSettings = builder.Configuration.GetSection("ServiceApiSettings").Get<ServiceApiSettings>();
+builder.Services.AddScoped<ResourceOwnerPasswordTokenHandler>();
 builder.Services.Configure<ServiceApiSettings>(builder.Configuration.GetSection("ServiceApiSettings"));
 builder.Services.Configure<ClientSettings>(builder.Configuration.GetSection("ClientSettings"));
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<IIdentityService, IdentityService>();
+builder.Services.AddHttpClient<ICatalogService, CatalogService>(opt =>
+{
+    //var serviceApiSettings = builder.Configuration.GetSection("ServiceApiSettings").Get<ServiceApiSettings>();
+    opt.BaseAddress = new Uri($"{serviceApiSettings.GatewayBaseUri}/{serviceApiSettings.Catalog.Path}");
+
+});
+builder.Services.AddHttpClient<IUserService, UserService>(opt =>
+{
+    //var serviceApiSettings = builder.Configuration.GetSection("ServiceApiSettings").Get<ServiceApiSettings>();
+    //var serviceProvider = builder.Services.BuildServiceProvider();
+    //var test = serviceProvider.GetRequiredService<IOptions<ServiceApiSettings>>().Value;
+    opt.BaseAddress = new Uri(serviceApiSettings.IdentityBaseUri); 
+}).AddHttpMessageHandler<ResourceOwnerPasswordTokenHandler>();
+
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, opt =>
 {

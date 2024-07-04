@@ -1,6 +1,8 @@
 ﻿using FreeCourse.Web.Models;
 using FreeCourse.Web.Services;
 using FreeCourse.Web.Services.Interfaces;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 
@@ -40,6 +42,14 @@ namespace FreeCourse.Web.Controllers
                 return View();
             }
 
+            return RedirectToAction(nameof(Index), "Home");
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Logout()
+        {
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _identiyService.RevokeRefreshToken();
             return RedirectToAction(nameof(Index), "Home");
         }
     }
