@@ -3,6 +3,7 @@ using FreeCourse.Web.Models.Catalogs;
 using FreeCourse.Web.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace FreeCourse.Web.Controllers
@@ -36,12 +37,16 @@ namespace FreeCourse.Web.Controllers
         {
             var categories = await _catalogService.GetAllCategoryAsync();
             ViewBag.categoryList = new SelectList(categories, "Id", "Name");
-            courseCreateInput.UserId = _sharedIdentityService.GetUserId;
+
+            // burayı şimdilik böyle çözdüm, en doğru çözümü bulana kadar bu şekilde kalsın.
+            ModelState.Remove<CourseCreateInput>(x => x.Picture);
+            ModelState.Remove<CourseCreateInput>(x => x.UserId);
+
             if (!ModelState.IsValid) 
             {
                 return View();
             }
-           
+            courseCreateInput.UserId = _sharedIdentityService.GetUserId;
             await _catalogService.CreateCourseAsync(courseCreateInput);
             
             return RedirectToAction(nameof(Index));
