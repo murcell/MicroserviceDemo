@@ -18,7 +18,6 @@ builder.Services.Configure<ServiceApiSettings>(builder.Configuration.GetSection(
 builder.Services.Configure<ClientSettings>(builder.Configuration.GetSection("ClientSettings"));
 builder.Services.AddScoped<ISharedIdentityService, SharedIdentityService>();
 
-
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddHttpClient<IIdentityService, IdentityService>();
 builder.Services.AddAccessTokenManagement();
@@ -38,6 +37,14 @@ builder.Services.AddHttpClient<IUserService, UserService>(opt =>
     //var test = serviceProvider.GetRequiredService<IOptions<ServiceApiSettings>>().Value;
     opt.BaseAddress = new Uri(serviceApiSettings.IdentityBaseUri); 
 }).AddHttpMessageHandler<ResourceOwnerPasswordTokenHandler>();
+
+
+builder.Services.AddHttpClient<IPhotoStockService, PhotoStockService>(opt =>
+{
+    //var serviceApiSettings = builder.Configuration.GetSection("ServiceApiSettings").Get<ServiceApiSettings>();
+    opt.BaseAddress = new Uri($"{serviceApiSettings.GatewayBaseUri}/{serviceApiSettings.PhotoStock.Path}");
+
+}).AddHttpMessageHandler<ClientCredentialTokenHandler>();
 
 
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(CookieAuthenticationDefaults.AuthenticationScheme, opt =>

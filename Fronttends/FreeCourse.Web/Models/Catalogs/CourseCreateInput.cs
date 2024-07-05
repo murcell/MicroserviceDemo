@@ -13,6 +13,7 @@ namespace FreeCourse.Web.Models.Catalogs
         [Display(Name = "Kurs fiyat")]
         public decimal Price { get; set; }
 
+        // validationa takılıyor
         public string Picture { get; set; }
 
         public string UserId { get; set; }
