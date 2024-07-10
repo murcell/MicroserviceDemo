@@ -7,3 +7,4 @@ Services
 	-FakePayment : 5016
 -identity Server : 5001
 -Gateway : 5000
+-Web : 5010
