@@ -1,5 +1,7 @@
+using FreeCourse.Services.Order.Application.Consumer;
 using FreeCourse.Services.Order.Infrastructure;
 using FreeCourse.Shared.Services;
+using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -50,6 +52,27 @@ builder.Services.AddMediatR(cfg =>
     //cfg.RegisterServicesFromAssembly(typeof(FreeCourse.Services.Order.Application.Handlers.GetOrderByUserIdQueryHandler).Assembly);
 });
 
+
+// bu ayarlar önemli
+builder.Services.AddMassTransit(x =>
+{
+    x.AddConsumer<CreateOrderMessageCommandConsumer>();
+
+    x.UsingRabbitMq((context, cfg) =>
+    {
+        cfg.Host(builder.Configuration["RabbitMQUrl"], "/", host =>
+        {
+            host.Username("guest");
+            host.Password("guest");
+        });
+
+        cfg.ReceiveEndpoint("create-order-service", e =>
+        {
+            e.ConfigureConsumer<CreateOrderMessageCommandConsumer>(context);
+        });
+
+    });
+});
 
 
 var app = builder.Build();
