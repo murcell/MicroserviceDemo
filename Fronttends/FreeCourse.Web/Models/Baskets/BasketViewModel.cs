@@ -2,6 +2,8 @@
 {
     public class BasketViewModel
     {
+        private List<BasketItemViewModel> _basketItems;
+
         public BasketViewModel()
         {
             _basketItems = new List<BasketItemViewModel>();
@@ -12,8 +14,7 @@
         public string DiscountCode { get; set; } = "";
 
         public int? DiscountRate { get; set; }
-        private List<BasketItemViewModel> _basketItems;
-
+       
         public List<BasketItemViewModel> BasketItems
         {
             get
