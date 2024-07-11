@@ -95,6 +95,8 @@ public class CourseService : ICourseService
         // Publisher olarak course servisiayarladık
         await _publishEndpoint.Publish<CourseNameChangedEvent>(new CourseNameChangedEvent() { CourseId = updateCourse.Id, UpdatedNamed = courseUpdateDto.Name });
 
+        //await _publishEndpoint.Publish<CourseNameChangedEvent>(new CourseNameChangedEvent() { CourseId = updateCourse.Id, UpdatedNamed = courseUpdateDto.Name });
+
         return Response<NoContent>.Success(204);
     }
 
