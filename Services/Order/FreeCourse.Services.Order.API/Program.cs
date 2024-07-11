@@ -57,6 +57,7 @@ builder.Services.AddMediatR(cfg =>
 builder.Services.AddMassTransit(x =>
 {
     x.AddConsumer<CreateOrderMessageCommandConsumer>();
+    x.AddConsumer<CourseNameChangedEventConsumer>();
 
     x.UsingRabbitMq((context, cfg) =>
     {
@@ -69,6 +70,11 @@ builder.Services.AddMassTransit(x =>
         cfg.ReceiveEndpoint("create-order-service", e =>
         {
             e.ConfigureConsumer<CreateOrderMessageCommandConsumer>(context);
+        });
+
+        cfg.ReceiveEndpoint("course-nama-change-event-order-service", e =>
+        {
+            e.ConfigureConsumer<CourseNameChangedEventConsumer>(context);
         });
 
     });
