@@ -1,5 +1,7 @@
+using FreeCourse.Gateway.DelegateHandlers;
 using Ocelot.DependencyInjection;
-using Ocelot.Middleware;var builder = WebApplication.CreateBuilder(args);
+using Ocelot.Middleware;
+var builder = WebApplication.CreateBuilder(args);
 
 builder.Configuration.AddJsonFile($"configuration.{builder.Environment.EnvironmentName.ToLower()}.json");
 
@@ -11,7 +13,10 @@ builder.Services.AddAuthentication().AddJwtBearer("GatewayAuthenticationScheme",
     options.RequireHttpsMetadata = false;
 });
 
-builder.Services.AddOcelot();//.AddDelegatingHandler<TokenExhangeDelegateHandler>();
+builder.Services.AddHttpClient<TokenExchangeDelegateHandler>();
+
+builder.Services.AddOcelot().AddDelegatingHandler<TokenExchangeDelegateHandler>();
+// bu TokenExchangeDelegateHandler handlerin ne zaman kullanýacaðýný da configuration.development dosyasýnda ilgili microserviseslere "DelegatingHandlers": [ "TokenExhangeDelegateHandler" ], ekledim
 
 var app = builder.Build();
 
