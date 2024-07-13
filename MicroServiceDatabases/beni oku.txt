@@ -1,0 +1,3 @@
+bu şekilde farklı yml oluşturmanın sebebi
+her ortam için farklı ayarları yapmak
+stg, alpha,production vb
