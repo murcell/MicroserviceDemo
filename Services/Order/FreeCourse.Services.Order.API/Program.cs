@@ -85,6 +85,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
+    // container ayaða kalkýnca oluþturduðumuz migrationýn çalýþmasý için
     var serviceProvider = scope.ServiceProvider;
     var orderDbContext = serviceProvider.GetRequiredService<OrderDbContext>();
     orderDbContext.Database.Migrate();
@@ -95,6 +96,7 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseDeveloperExceptionPage();
 }
 app.UseAuthentication();
 app.UseAuthorization();
