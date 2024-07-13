@@ -1,0 +1,201 @@
+version: "3.8"
+services:
+  catalogdb:
+    image: mongo
+    container_name: catalogdb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - catalogdb_volume:/data/db
+  basketdb:
+    image: redis
+    container_name: basketdb
+    restart: always
+    ports:
+      - "6379:6379"
+  discountdb:
+    image: postgres
+    container_name: discountdb
+    restart: always
+    ports:
+      - "5432:5432"
+    volumes:
+      - discountdb_volume:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=Pass1234.?
+      - POSTGRES_DB=discountdb
+  identitydb:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: identitydb
+    restart: always
+    ports:
+      - "1433:1433"
+    volumes:
+      - identitydb_volume:/var/opt/mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Pass1234.?
+  orderdb:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: orderdb
+    restart: always
+    ports:
+      - "1444:1433"
+    volumes:
+      - orderdb_volume:/var/opt/mssql
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Pass1234.?
+  rabbitmq:
+    image: rabbitmq:3.13.4-management
+    container_name: rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  catalog.api:
+    image: catalog_api_image
+    build:
+      context: .
+      dockerfile: Services/Catalog/FreeCourse.Services.Catalog/Dockerfile
+    container_name: catalog.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQUrl=rabbitmq
+      - IdentityServerUrl=http://identityserver.api
+      - DatabaseSettings:ConnectionStrings=mongodb://catalogdb:27017
+    ports:
+      - "5011:8080"
+    depends_on:
+      - catalogdb
+      - rabbitmq
+  basket.api:
+    image: basket_api_image
+    build:
+      context: .
+      dockerfile: Services/Basket/FreeCourse.Services.Basket/Dockerfile
+    container_name: basket.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - IdentityServerUrl=http://identityserver.api
+      - RedisSettings:Port=6379
+      - RedisSettings:Host=basketdb
+      - RabbitMQUrl=rabbitmq
+    ports:
+      - "5013:8080"
+    depends_on:
+      - basketdb
+      - rabbitmq
+  photostock.api:
+    image: photostock_api_image
+    build:
+      context: .
+      dockerfile: Services/PhotoStock/FreeCourse.Services.PhotoStock/Dockerfile
+    container_name: photostock.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - IdentityServerUrl=http://identityserver.api
+    ports:
+      - "5012:8080"
+    volumes:
+      - type: bind
+        source: D:\repos\MicroserviceDemo\photos
+        target: /app/wwwroot/photos
+  discount.api:
+    image: discount_api_image
+    build:
+      context: .
+      dockerfile: Services/Discount/FreeCourse.Services.Discount/Dockerfile
+    container_name: discount.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - IdentityServerUrl=http://identityserver.api
+      - "ConnectionStrings:PostgreSql=User ID=admin;Password=Pass1234.?;Server=discountdb;Port=5432;Database=discountdb;Pooling=true"
+    ports:
+      - "5014:8080"
+    depends_on:
+      - discountdb
+  fakepayment.api:
+    image: fakepayment_api_image
+    build:
+      context: .
+      dockerfile: Services/FakePayment/FreeCourse.Services.FakePayment/Dockerfile
+    container_name: fakepayment.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQUrl=rabbitmq
+      - IdentityServerUrl=http://identityserver.api
+    ports:
+      - "5016:8080"
+    depends_on:
+      - rabbitmq
+  order.api:
+    image: order_api_image
+    build:
+      context: .
+      dockerfile: Services/Order/FreeCourse.Services.Order.API/Dockerfile
+    container_name: order.api
+    restart: on-failure
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - RabbitMQUrl=rabbitmq
+      - IdentityServerUrl=http://identityserver.api
+      - "ConnectionStrings:DefaultConnection=Server=orderdb,1433;Database=orderdb; User=sa; Password=Pass1234.?;TrustServerCertificate=True"
+    ports:
+      - "5015:8080"
+    depends_on:
+      - orderdb
+      - rabbitmq
+  gateway.api:
+    image: gateway_api_image
+    build:
+      context: .
+      dockerfile: FreeCourse.Gateway/Dockerfile
+    container_name: gateway.api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - IdentityServerUrl=http://identityserver.api
+    ports:
+      - "5000:8080"
+  aspnetcoremvc.web:
+    image: aspnetcoremvc.web_image
+    build:
+      context: .
+      dockerfile: Fronttends/FreeCourse.Web/Dockerfile
+    container_name: aspnetcoremvc.web
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ServiceApiSettings:IdentityBaseUri=http://identityserver.api
+      - ServiceApiSettings:GatewayBaseUri=http://gateway.api:8080
+    ports:
+      - "5010:8080"
+    depends_on:
+      - gateway.api
+      - identityserver.api
+      - catalog.api
+      - basket.api
+      - discount.api
+      - order.api
+      - photostock.api
+      - fakepayment.api
+  identityserver.api:
+    image: identity_server_api_image
+    build:
+      context: .
+      dockerfile: IdentityServer/FreeCourse.IdentityServer/Dockerfile
+    container_name: identityserver.api
+    restart: on-failure
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - "ConnectionStrings:DefaultConnection=Server=identitydb,1433;Database=IdentityDb; User=sa; Password=Pass1234.?"
+    ports:
+      - "5001:80"
+    depends_on:
+      - identitydb
+volumes:
+  catalogdb_volume:
+  discountdb_volume:
+  identitydb_volume:
+  orderdb_volume:
