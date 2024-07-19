@@ -15,6 +15,7 @@ using Microsoft.CodeAnalysis.FlowAnalysis;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using System;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,13 +46,16 @@ builder.Services.AddControllersWithViews();//.AddFluentValidation(fv => fv.Regis
 //builder.Services.AddFluentValidationAutoValidation(); // the same old MVC pipeline behavior
 //builder.Services.AddFluentValidationClientsideAdapters(); // for client side
 
-builder.Services.AddFluentValidationAutoValidation(config =>
-{
-    config.DisableDataAnnotationsValidation = true;
-});
-builder.Services.AddScoped<IValidator<CourseCreateInput>, CourseCreateInputValidator>();
-builder.Services.AddScoped<IValidator<CourseUpdateInput>, CourseUpdateInputValidator>();
-builder.Services.AddScoped<IValidator<DiscountApplyInput>, DiscountApplyInputValidator>();
+//builder.Services.AddFluentValidationAutoValidation(config =>
+//{
+//    config.DisableDataAnnotationsValidation = true;
+//});
+
+builder.Services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
+//// yukarýdaki gibi de olur bu þekilde de olur
+//builder.Services.AddScoped<IValidator<CourseCreateInput>, CourseCreateInputValidator>();
+//builder.Services.AddScoped<IValidator<CourseUpdateInput>, CourseUpdateInputValidator>();
+//builder.Services.AddScoped<IValidator<DiscountApplyInput>, DiscountApplyInputValidator>();
 
 var app = builder.Build();
 
