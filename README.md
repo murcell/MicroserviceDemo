@@ -19,14 +19,5 @@ Simple microservice architecture.
 - **Dockerfile**
 - **Shared** class library (common utilities)
 
-## Solution Layout
-- `FreeCourse.Gateway` — API Gateway  
-- `IdentityServer/FreeCourse.IdentityServer` — Identity Server  
-- `Fronttends/FreeCourse.Web` — Web UI (Razor/MVC)  
-- `Services` — Microservices  
-- `Shared/FreeCourse.Shared` — Shared library  
-- `MicroServiceDatabases` — Database assets/config  
-- `docker-compose.yml` — Orchestration
 
-## Notes
-- Replace **.NET target framework** text above with the actual TFM from your project files (e.g., `net6.0`, `net7.0`, `net8.0`).
+
