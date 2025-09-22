@@ -16,7 +16,7 @@
         "AuthenticationProviderKey": "GatewayAuthenticationScheme",
         "AllowedScopes": [ "catalog_fullpermission" ]
       }
-     },
+    },
     {
       "DownstreamPathTemplate": "/api/{everything}",
       "DownstreamScheme": "http",
@@ -107,3 +107,7 @@
     "BaseUrl": "http://localhost:5000"
   }
 }
+
+//  http://localhost:5000/services/catalog/courses/savecourse bu url aşağıdaki urlye dönüşüyuor
+
+//  http://localhost:5011/api/courses/savecourse
