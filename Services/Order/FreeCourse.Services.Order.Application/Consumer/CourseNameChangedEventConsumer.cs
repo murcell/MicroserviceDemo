@@ -19,7 +19,7 @@ namespace FreeCourse.Services.Order.Application.Consumer
             _orderDbContext = orderDbContext;
         }
 
-        // order serviste bir ürürün adı değiştirilince burası dinleyecek ve order db de de updated işlemi yapılacak
+        // course serviste bir ürürün adı değiştirilince burası dinleyecek ve order db de de update işlemi yapılacak
         public async Task Consume(ConsumeContext<CourseNameChangedEvent> context)
         {
             var orderItem = await _orderDbContext.OrderItems.Where(x => x.ProductId == context.Message.CourseId).ToListAsync();
